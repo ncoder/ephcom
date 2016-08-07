@@ -541,7 +541,7 @@
    Read a JPL Ephemeris ASCII header from the file pointed to by infp
    and store values in header structure.  Write any errors to stderr.
 */
-ephcom_readascii_header(FILE *infp, struct ephcom_Header *header) {
+int ephcom_readascii_header(FILE *infp, struct ephcom_Header *header) {
 
 char group[13]; /* To store the "GROUP" header line information */
 double val1, val2, val3; /* To read text line with 3 double precision words */
@@ -712,7 +712,7 @@ return(0);
    Read a block of data coefficients from a JPL ASCII ephemeris file.
    Returns number of coefficients read, 0 at EOF.
 */
-ephcom_readascii_block(
+int ephcom_readascii_block(
    FILE *infp,
    struct ephcom_Header *header,
    double *datablock) {
@@ -772,7 +772,7 @@ return(datapoints);
    Read a JPL Ephemeris header in binary format.  Store values in
    an ephcom_Header struct.
 */
-ephcom_readbinary_header(FILE *infp, struct ephcom_Header *header) {
+int ephcom_readbinary_header(FILE *infp, struct ephcom_Header *header) {
 
 int i, j, k;
 char *fgets(char *, int, FILE *);
@@ -961,15 +961,13 @@ int ephcom_readbinary_block(
 
 int i;
 long filebyte;
-double ephcom_indouble(FILE *);
-int fseek(FILE *, long, int);
 
 filebyte = (blocknum + 2) * header->ncoeff * 8; /* 8 bytes per coefficient */
 fseek(infp, filebyte, SEEK_SET);
-// printf("Blocknum: %d, Byte: %d\n", blocknum, filebyte);
+//printf("Blocknum: %d, Byte: %d\n", blocknum, filebyte);
 for (i=0; !feof(infp) && i<header->ncoeff; i++) {
    datablock[i] = ephcom_indouble(infp);
-   }
+}
 if (i < header->ncoeff && feof(infp)) i = -1; /* 0 --> EOF */
 return(i); /* Number of coefficients successfuly read (all or nohing). */
 }
@@ -978,7 +976,7 @@ return(i); /* Number of coefficients successfuly read (all or nohing). */
 /*
    Write header information in ASCII format.
 */
-ephcom_writeascii_header(FILE *outfp, struct ephcom_Header *header) {
+int ephcom_writeascii_header(FILE *outfp, struct ephcom_Header *header) {
 
 char group[13];
 double val1, val2, val3; /* To read text line with 3 double precision words */
@@ -1190,7 +1188,7 @@ return(0);
 /*
    Write coefficient block information in ASCII format.
 */
-ephcom_writeascii_block(
+int ephcom_writeascii_block(
    FILE *outfp,
    struct ephcom_Header *header,
    int blocknum,
@@ -1204,7 +1202,6 @@ char outhcars[EPHCOM_MAXLINE + 1];
 size_t fwrite(const void *ptr, size_t size, size_t  nmemb, FILE *stream);
 int fputc(int, FILE *);
 double ephcom_indouble(FILE *);
-int ephcom_doublestrc2f(char *); /* Convert C formatted double to FORTRAN format */
 
 /*
    Write first line in block, which is block number and ncoeff.
@@ -1263,7 +1260,7 @@ char *month[12] = {"JAN","FEB","MAR","APR","MAY","JUN",
                    "JUL","AUG","SEP","OCT","NOV","DEC"};
 
 char outhcars[EPHCOM_MAXLINE + 1];
-double ephcom_outdouble(FILE *, double);
+int ephcom_outdouble(FILE *, double);
 char *ephcom_nxtgrp(char *group, char *expected, FILE *infile);
 size_t fwrite(const void *ptr, size_t size, size_t  nmemb, FILE *stream);
 
@@ -1408,7 +1405,7 @@ return(0);
 /*
    Write a block of data coefficients in JPL binary file format.
 */
-ephcom_writebinary_block(
+int ephcom_writebinary_block(
    FILE *outfp,
    struct ephcom_Header *header,
    int blocknum,
@@ -1449,7 +1446,7 @@ return(0);
    ephcom_parse_block() - Parse a binary block of data.  Warning: verbose!
                           Writes parsed output to file pointer outfp.
 */
-ephcom_parse_block(
+int ephcom_parse_block(
    FILE *outfp,
    struct ephcom_Header *header,
    double *datablock
@@ -1519,7 +1516,7 @@ return(NULL);
    if necessary to match network order (Big Endian).  On Intel 80x86
    the bytes will get swapped, on Motorola or SPARC they won't.
 */
-ephcom_outdouble(FILE *outfp, double x) {
+int ephcom_outdouble(FILE *outfp, double x) {
    double retval;
    unsigned char ch[8];
    unsigned char *gnulliver64c(unsigned char *);
@@ -1540,7 +1537,7 @@ ephcom_outdouble(FILE *outfp, double x) {
    if necessary to match network order (Big Endian).  On Intel 80x86
    the bytes will get swapped, on Motorola or SPARC they won't.
 */
-ephcom_outint(FILE *outfp, unsigned u) {
+int ephcom_outint(FILE *outfp, unsigned u) {
    unsigned u2;
    unsigned gnulliver32(unsigned);
 
@@ -1557,10 +1554,8 @@ ephcom_outint(FILE *outfp, unsigned u) {
 double ephcom_indouble(FILE *infp) {
    double x;
    static double retval;
-   size_t fread(void *ptr,  size_t size, size_t nmemb, FILE *stream);
    unsigned char ch[8];
    unsigned char *gnulliver64c(unsigned char *);
-   void *memcpy(void *, const void *, size_t);
    
    /*
       Handle as character string until bytes are in correct order,
@@ -1598,7 +1593,7 @@ int ephcom_inint(FILE *infp) {
                           FORTRAN creates.  Conversion happens in place.
 */
 
-ephcom_doublestrc2f(char *buf) {
+int ephcom_doublestrc2f(char *buf) {
 
 int i, j, istart, istop, exp, edigits;
 double x;
@@ -1650,7 +1645,7 @@ return(0);
    Values for ntarg and ncntr correspond to locations ntarg-1 and
    ncntr-1 in coords->pv[].
 */
-ephcom_pleph(struct ephcom_Coords *coords, int ntarg, int ncntr, double *r) {
+int ephcom_pleph(struct ephcom_Coords *coords, int ntarg, int ncntr, double *r) {
 
 int i,j;
 
@@ -1684,7 +1679,7 @@ return(0);
 /*
    ephcom_get_coords() - Interpolate positions and velocities at given time.
 */
-ephcom_get_coords(FILE *infp,
+int ephcom_get_coords(FILE *infp,
                   struct ephcom_Header *header,
                   struct ephcom_Coords *coords,
                   double *datablock) {
@@ -1705,6 +1700,7 @@ double chebytime; /* Normalized Chebyshev time, in interval [-1,1]. */
 int ncoords; /* Number of coordinates for position and velocity */
 int ncf; /* Number of Chebyshev coefficients per coordinate */
 int retval; /* Return value */
+int blockread; 
 
 retval = 0; /* Assume normal return */
 /*
@@ -1723,8 +1719,9 @@ else {
    /*
       Read the data block that contains coefficients for desired date
    */
-   ephcom_readbinary_block(infp, header, blocknum, datablock);
-// printf("%12.2f : Block %d, %12.2f to %12.2f\n",
+   blockread = ephcom_readbinary_block(infp, header, blocknum, datablock);
+   //printf("blockread: %d", blockread);
+   // printf("%12.2f : Block %d, %12.2f to %12.2f\n",
 //        totaltime, blocknum, datablock[0], datablock[1]);
 // ephcom_parse_block(stdout, header, datablock);
    /*
@@ -1825,7 +1822,7 @@ return(retval);
 /*
    ephcom_cheby() - interpolate at a point using Chebyshev coefficients
 */
-inline ephcom_cheby(
+inline int ephcom_cheby(
    int maxcoeffs, /* Maximum number of Chebyshev components possible */
    double x,      /* Value of x over [-1,1] for Chebyshev interpolation */
    double span,   /* Span in time of subinterval, for velocity */
@@ -1839,7 +1836,7 @@ int i, j;
 static double twox;
 static double *pc, *vc; /* Position and velocity polynomial coefficients. */
 static double lastx=2.0; /* x from last call; initialize to impossible value */
-static init=1; /* Need to initialize pc[] and vc[] */
+static int init=1; /* Need to initialize pc[] and vc[] */
 
 /*
    Allocate position and velocity Chebyshev coefficients.
@@ -1927,7 +1924,7 @@ return(0);
 
    From pp. 604, 606 in the Explanatory Supplement to the Astronomical Almanac.
 */
-ephcom_jd2cal(double tjd, int idate[6], int calendar_type) {
+int ephcom_jd2cal(double tjd, int idate[6], int calendar_type) {
 
 int ihour, imin, isec;
 int j;

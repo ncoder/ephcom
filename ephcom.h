@@ -92,3 +92,81 @@ struct ephcom_Coords {
                      /* pv[16][]: User-defined object                       */
    };
 
+int ephcom_readbinary_header(FILE *infp, struct ephcom_Header *header);
+
+/*
+ephcom_get_coords() - Interpolate positions and velocities at given time.
+*/
+int ephcom_get_coords(FILE *infp,
+	struct ephcom_Header *header,
+	struct ephcom_Coords *coords,
+	double *datablock);
+
+/*
+Planetary Ephemeris.  Takes coordinates already calculated in
+coords structure an converts to vectors and vector dot in testr[].
+Bodies start at 1 for Mercury, to match the JPL PLEPH() numbering.
+Values for ntarg and ncntr correspond to locations ntarg-1 and
+ncntr-1 in coords->pv[].
+*/
+int ephcom_pleph(struct ephcom_Coords *coords, int ntarg, int ncntr, double *r);
+
+/*
+ephcom_jd2cal() - convert Julian Day to calendar date and time.
+
+tjd: double precision Julian Day
+idate: integer year, month, day, hour, minute, second of tjd
+calendar_type: -1=Julian; 0=Automatic; 1=Gregorian
+
+If automatic, use Julian calendar for dates before 15 October 1582.
+
+From pp. 604, 606 in the Explanatory Supplement to the Astronomical Almanac.
+*/
+int ephcom_jd2cal(double tjd, int idate[6], int calendar_type);
+
+/*
+ephcom_doublstrc2f() - function to convert a string with a double precision
+value written in C to a double precision value that
+FORTRAN creates.  Conversion happens in place.
+*/
+
+int ephcom_doublestrc2f(char *buf);
+
+/*
+Print an integer (4-byte) value to the given file with bytes swapped
+if necessary to match network order (Big Endian).  On Intel 80x86
+the bytes will get swapped, on Motorola or SPARC they won't.
+*/
+int ephcom_outint(FILE *outfp, unsigned u);
+
+
+/*
+ephcom_cheby() - interpolate at a point using Chebyshev coefficients
+*/
+inline int ephcom_cheby(
+	int maxcoeffs, /* Maximum number of Chebyshev components possible */
+	double x,      /* Value of x over [-1,1] for Chebyshev interpolation */
+	double span,   /* Span in time of subinterval, for velocity */
+	double *y,     /* Chebyshev coefficients */
+	int ncoords,   /* Total number of coordinates to interpolate */
+	int ncoeffs,   /* Number of Chebyshev coefficients per coordinate */
+	double *pv     /* Array to hold position in 1st half, velocity in 2nd */
+);
+
+/*
+ephcom_cal2jd() - convert calendar date and time to JD.
+
+idate: integer year, month, day, hour, minute, second
+calendar_type: -1=Julian; 0=Automatic; 1=Gregorian
+return value: double precision Julian Day of idate[]
+
+From pp. 604, 606 in the Explanatory Supplement to the Astronomical Almanac.
+*/
+double ephcom_cal2jd(int idate[6], int calendar_type);
+
+/*
+Read in a double precision value from the given file with bytes swapped
+if necessary to match host order (Little- or DEC- Endian).  On Intel 80x86
+the bytes will get swapped, on Motorola or SPARC they won't.
+*/
+double ephcom_indouble(FILE *infp);

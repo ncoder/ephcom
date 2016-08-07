@@ -54,6 +54,12 @@ ephcoeff: ephcoeff.c gnulliver.o ephcom.h ephcom.o
 vtransit: vtransit.c gnulliver.o ephcom.h ephcom.o
 	$(CC) $(CFLAGS) vtransit.c gnulliver.o ephcom.o -o vtransit -lm
 
+jsmain: jsmain.c gnulliver.o ephcom.h ephcom.o
+	$(CC) $(CFLAGS) jsmain.c gnulliver.o ephcom.o -o jsmain -lm
+
+jsmain.html: jsmain.c gnulliver.c ephcom.c eph.405
+	em++ gnulliver.c ephcom.c jsmain.c -o jsmain.html --preload-file eph.405
+
 # html:
 # 	for FILE in $(MAN1PAGES) ; do \
 # 	   nroff -man $$FILE.1 | $(MAN2HTML) > $$FILE.html ;\
