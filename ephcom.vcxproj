@@ -111,6 +111,7 @@
     <None Include="ephcmp.html" />
     <None Include="ephcoeff.html" />
     <None Include="headcmp.html" />
+    <None Include="Makefile" />
     <None Include="testeph.html" />
     <None Include="vtransit.html" />
   </ItemGroup>

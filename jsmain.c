@@ -15,7 +15,7 @@ during the Venus Transit of 8 June 2004 at 08:19:44
 
 
 
-int calcposvel(double unixtime) {
+int calcposvel(char* ephfile, double unixtime) {
 
 	struct ephcom_Header header1;
 	struct ephcom_Coords coords;
@@ -48,8 +48,8 @@ int calcposvel(double unixtime) {
 	*/
 	FILE *infp, *outfp = stdout;
 
-	if ((infp = fopen("eph.405", "r")) == NULL) {
-		fprintf(stderr, "\nERROR: Can't open ephemeris file %s for input.\n\n", "eph.405");
+	if ((infp = fopen(ephfile, "r")) == NULL) {
+		fprintf(stderr, "\nERROR: Can't open ephemeris file %s for input.\n\n", ephfile);
 		exit(1);
 	}
 
@@ -160,9 +160,9 @@ int calcposvel(double unixtime) {
 }
 
 
-// expect ephemeris file at /eph.405
+// expect ephemeris file at jplbin/2000.405.eph
 
 int main(int argc, char *argv[]) {
 	time_t t = time(NULL);
-	return calcposvel(t);
+	return calcposvel("jplbin/2000.405.eph", t);
 }

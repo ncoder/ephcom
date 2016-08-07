@@ -57,8 +57,8 @@ vtransit: vtransit.c gnulliver.o ephcom.h ephcom.o
 jsmain: jsmain.c gnulliver.o ephcom.h ephcom.o
 	$(CC) $(CFLAGS) jsmain.c gnulliver.o ephcom.o -o jsmain -lm
 
-jsmain.html: jsmain.c gnulliver.c ephcom.c eph.405
-	em++ gnulliver.c ephcom.c jsmain.c -o jsmain.html --preload-file eph.405
+jsmain.html: jsmain.c gnulliver.c ephcom.c jplbin/2000.405.eph
+	em++ gnulliver.c ephcom.c jsmain.c -o jsmain.html --preload-file jplbin/2000.405.eph
 
 # html:
 # 	for FILE in $(MAN1PAGES) ; do \

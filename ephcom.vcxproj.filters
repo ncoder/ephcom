@@ -39,5 +39,6 @@
     <None Include="headcmp.html" />
     <None Include="testeph.html" />
     <None Include="vtransit.html" />
+    <None Include="Makefile" />
   </ItemGroup>
 </Project>
