@@ -26,6 +26,7 @@ INSTALL = install
 MAN2HTML = man2html
 BINDIR = /usr/local/bin
 MAN1DIR = /usr/local/man
+JSLIBOUTDIR = /mnt/d/Users/ncoder/code/qvis3d/qvis3d/
 
 all: $(PROGS)
 
@@ -54,11 +55,21 @@ ephcoeff: ephcoeff.c gnulliver.o ephcom.h ephcom.o
 vtransit: vtransit.c gnulliver.o ephcom.h ephcom.o
 	$(CC) $(CFLAGS) vtransit.c gnulliver.o ephcom.o -o vtransit -lm
 
-jsmain: jsmain.c gnulliver.o ephcom.h ephcom.o
-	$(CC) $(CFLAGS) jsmain.c gnulliver.o ephcom.o -o jsmain -lm
+# test js app, native version.
+jsmain: jsmain.c jsephcom.o gnulliver.o ephcom.h ephcom.o
+	$(CC) $(CFLAGS) jsmain.c jsephcom.o gnulliver.o ephcom.o -o jsmain -lm
 
-jsmain.html: jsmain.c gnulliver.c ephcom.c jplbin/2000.405.eph
-	em++ gnulliver.c ephcom.c jsmain.c -o jsmain.html --preload-file jplbin/2000.405.eph
+# test js app, html version
+jsmain.html: jsmain.c jsephcom.c gnulliver.c ephcom.c jplbin/2000.405.eph
+	emcc gnulliver.c jsephcom.c ephcom.c jsmain.c -o jsmain.html --preload-file jplbin/2000.405.eph
+
+# main js lib build target
+# set JSLIBOUTDIR properly first.
+.PHONY: jsephcom
+jsephcom: $(JSLIBOUTDIR)\jsephcom.js
+
+$(JSLIBOUTDIR)\jsephcom.js: jsephcom.c gnulliver.c ephcom.c jplbin/2000.405.eph
+	emcc gnulliver.c ephcom.c jsephcom.c -o $(JSLIBOUTDIR)jsephcom.js --preload-file jplbin/2000.405.eph -s EXPORTED_FUNCTIONS='["_calcposvel"]'
 
 # html:
 # 	for FILE in $(MAN1PAGES) ; do \

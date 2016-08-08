@@ -1822,7 +1822,7 @@ return(retval);
 /*
    ephcom_cheby() - interpolate at a point using Chebyshev coefficients
 */
-inline int ephcom_cheby(
+int ephcom_cheby(
    int maxcoeffs, /* Maximum number of Chebyshev components possible */
    double x,      /* Value of x over [-1,1] for Chebyshev interpolation */
    double span,   /* Span in time of subinterval, for velocity */
