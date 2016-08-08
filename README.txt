@@ -1,4 +1,43 @@
 ========================================================
+Emscripten branch
+========================================================
+
+Look below for the standard readme of the main repo.
+
+High-level details:
+This branch has a few fixes to allow compiling with llvm.
+It also adds a js-friendly entrypoint for querying
+positions based on time.
+It _also_ has pre-built ephemeris for 2000 -2020 year range.
+so you can "just run" if that's good enough for you.
+
+Special instructions for getting the emscripten js lib 
+up and running:
+
+make sure you have emscripten compiler installed.
+run 
+> make jsmain
+> ./jsmain
+to test the native version of the test entrypoint. it should
+output the position of all planets in AU units as of "now".
+
+run
+> make jsmain.html
+to create a website that you can navigate to get the same thing.
+this builds the standard emscriptem debug webpage for testing. 
+since the native ephcom lib does standard IO, the ephemeris files 
+are embedded in the page. You can't just do a file://jsmain.html
+access to run them. you have to serve them using a web server
+else you run afoul of security restrictions. i suggest you use:
+> python -m SimpleHTTPListener 8080
+then you can navigate to
+http://localhost:8080/jsmain.html and see the program output.
+
+Using it in your webpage.
+Please refer to your emscripten documentation, as I'm not sure 
+I did it right myself.
+
+========================================================
 README file for the ephemeris.com JPL ephemeris software
 
                       Version 1.0
