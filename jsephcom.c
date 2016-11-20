@@ -54,7 +54,7 @@ double* calcposvel(double unixtime) {
 					 */
 	FILE *infp, *outfp = stdout;
 
-	if ((infp = fopen(ephfile, "r")) == NULL) {
+	if ((infp = fopen(ephfile, "rb")) == NULL) {
 		fprintf(stderr, "\nERROR: Can't open ephemeris file %s for input.\n\n", ephfile);
 		exit(1);
 	}
