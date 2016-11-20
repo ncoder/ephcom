@@ -18,19 +18,19 @@ int main(int argc, char *argv[]) {
 
 	if (result) {
 		fprintf(stdout,
-			"julian date %15.8lf, %15.8lf\n", result[index], result[index+1]);
+			"julian date %15.8lf, %15.8lf\n", result[index], result[index + 1]);
 		index += 2;
 
 		for (planeti = 0; planeti < EPHCOM_NUMOBJECTS; ++planeti)
 		{
 			fprintf(stdout,
 				"object %d: %15.8lf, %15.8lf, %15.8lf, %15.8lf, %15.8lf, %15.8lf\n", planeti,
-				result[index+0],
-				result[index+1],
-				result[index+2],
-				result[index+3],
-				result[index+4],
-				result[index+5]
+				result[index + 0],
+				result[index + 1],
+				result[index + 2],
+				result[index + 3],
+				result[index + 4],
+				result[index + 5]
 				);
 
 			index += 6;
