@@ -90,16 +90,19 @@ double* calcposvel(double unixtime) {
 
 		testjd = ephcom_cal2jd(idate, 0);
 		coords.et2[0] = testjd;
-		coords.et2[1] = second_fraction;
+		coords.et2[1] = second_fraction / (24*60*60.0);
 		if (ephcom_get_coords(infp, &header1, &coords, datablock) == 0) {
+			fclose(infp);
 			return coords.et2;
 		}
 		else {
 			fprintf(outfp, "Julian Day %15.2f not found.\n", testjd);
+			fclose(infp);
 			return 0;
 		}
 	}
 	else {
+		fclose(infp);
 		fprintf(outfp,
 			"\nERROR: Ephemeris file doesn't cover Julian Day %15.2f\n",
 			testjd);
